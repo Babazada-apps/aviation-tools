@@ -4,7 +4,7 @@ self.addEventListener("install", e => {
       return cache.addAll([
         "/aviation-tools/",
         "/aviation-tools/index.html",
-        "/aviation-tools/kulek/index.html",
+        "/aviation-tools/arzu/index.html",
         "/aviation-tools/converter/index.html",
         "/aviation-tools/icons/icon-192.png",
         "/aviation-tools/icons/icon-512.png"
