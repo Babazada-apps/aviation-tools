@@ -1,10 +1,11 @@
 {
-  "name": "Aviation Tools",
-  "short_name": "Aviation",
-  "start_url": "/aviation-tools/",
+  "name": "Aviation Tools by Babaeff",
+  "short_name": "AviationTools",
+  "start_url": "/aviation-tools/index.html",
+  "scope": "/aviation-tools/",
   "display": "standalone",
   "background_color": "#0f172a",
-  "theme_color": "#38bdf8",
+  "theme_color": "#0f172a",
   "icons": [
     {
       "src": "/aviation-tools/icons/icon-192.png",
