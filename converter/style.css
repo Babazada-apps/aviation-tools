@@ -1,127 +1,387 @@
 /* ============================================
-   AVIATION RADAR HUD THEME — FULL PACKAGE
+   AVIATION TOOLS — BLUE HUD + RADAR THEME
+   ALL-IN-ONE CSS
    ============================================ */
 
-/* ========= GLOBAL BODY RADAR BACKGROUND ========= */
-body {
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;600&display=swap");
+
+/* Reset */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background: radial-gradient(circle at center,
-      rgba(0, 255, 120, 0.14) 0%,
-      rgba(0, 0, 0, 0.97) 75%);
-  background-color: #000d0a;
-  color: #d9ffe8;
-  font-family: system-ui, sans-serif;
-  overflow-x: hidden;
-  position: relative;
 }
 
-/* Radar Circular Grid */
+/* Canvas arxa plan üçün (əgər istifadə edirsənsə) */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -2;
+}
+
+/* ========= GLOBAL BODY — RADAR BACKGROUND ========= */
+body {
+  background:
+    radial-gradient(circle at 30% 20%, #1e293b, #020617 70%),
+    radial-gradient(circle at 80% 80%, #0f172a, #020617 80%);
+  color: #e2e8f0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* BLUE RADAR GRID (Dairələr, dönen fon) */
 body::before {
   content: "";
   position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
+  inset: -40%;
   background:
     repeating-radial-gradient(
       circle,
-      rgba(0,255,120,0.08) 0,
-      rgba(0,255,120,0.08) 2px,
+      rgba(56, 189, 248, 0.20) 0px,
+      rgba(56, 189, 248, 0.20) 2px,
       transparent 2px,
       transparent 40px
     );
-  opacity: .45;
+  opacity: 0.35;
+  mix-blend-mode: screen;
   pointer-events: none;
-  animation: radarRotate 14s linear infinite;
+  animation: radarGridRotate 22s linear infinite;
+  z-index: -1;
 }
 
-/* Rotating Radar Sweep */
+/* BLUE RADAR SWEEP (conic gradient) */
 body::after {
   content: "";
   position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
+  inset: -40%;
   background: conic-gradient(
-    rgba(0,255,120,0.20),
-    rgba(0,255,120,0.00) 30%
+    from 0deg,
+    rgba(59, 130, 246, 0.28),
+    rgba(37, 99, 235, 0.18),
+    rgba(15, 23, 42, 0.0) 50%
   );
+  opacity: 0.33;
   mix-blend-mode: screen;
-  opacity: .34;
   pointer-events: none;
-  animation: sweepRotate 4.5s linear infinite;
+  animation: radarSweepRotate 5.5s linear infinite;
+  z-index: -1;
 }
 
-@keyframes radarRotate {
+@keyframes radarGridRotate {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-@keyframes sweepRotate {
+@keyframes radarSweepRotate {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-/* ========= HEADERS WITH HUD GLOW ========= */
-header h2,
-.header1 {
-  color: #afffcb;
-  text-shadow: 0 0 6px rgba(0,255,120,0.7),
-               0 0 16px rgba(0,255,120,0.5);
-  font-weight: 700;
+/* ========= ÜST PANEL / TITLE ========= */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(
+    90deg,
+    rgba(15, 23, 42, 0.95),
+    rgba(15, 23, 42, 0.85)
+  );
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
 }
 
-/* ========= CONTAINERS (GLASS RADAR PANELS) ========= */
+.title {
+  width: 100%;
+  max-width: 1100px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e0f2fe;
+  font-family: "Roboto Slab", serif;
+  text-shadow: 0 0 10px rgba(129, 230, 217, 0.5);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* SVG pilot ikonunun ölçüsü */
+#Capa_1 {
+  width: 48px;
+  height: 68px;
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+}
+
+/* ========= ANA LAYOUT ========= */
+
+.body1 {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 12px 40px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* HUD OVERLAY — sadə horizon + çarpaz */
+.body1::before {
+  content: "";
+  position: fixed;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  border-top: 1px solid rgba(148, 163, 184, 0.45);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.body1::after {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  height: 220px;
+  margin-left: -110px;
+  margin-top: -110px;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow:
+    0 0 12px rgba(59, 130, 246, 0.45),
+    inset 0 0 18px rgba(15, 23, 42, 0.9);
+  pointer-events: none;
+  opacity: 0.32;
+  z-index: -1;
+}
+
+/* ========= RADAR “BLIPS” (hədəf nöqtələri) ========= */
+
+@keyframes blipPulse {
+  0%, 100% { transform: scale(0.6); opacity: 0.0; }
+  40%      { transform: scale(1);   opacity: 0.9; }
+  70%      { transform: scale(1.15);opacity: 0.0; }
+}
+
+.radar-blip {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 3 fərqli blip (mövqelər + gecikmə) */
+.radar-blip.b1 { top: 30%; left: 35%; animation: blipPulse 5s infinite 0.4s; }
+.radar-blip.b2 { top: 60%; left: 70%; animation: blipPulse 6s infinite 1.2s; }
+.radar-blip.b3 { top: 40%; left: 55%; animation: blipPulse 7s infinite 2.0s; }
+
+/* Radar blip-ləri üçün HTML-də element yaratmaq istəmirsənsə,
+   istəsən bunları sonradan ayrıca <div class="radar-blip b1"></div> kimi əlavə edə bilərsən. */
+
+/* ========= CONTAINER’LAR (CARD UI) ========= */
+
 .container,
 .container2,
 .container3 {
-  background: rgba(0,255,120,0.04);
-  border: 1px solid rgba(0,255,120,0.18);
-  padding: 16px;
-  border-radius: 12px;
-  margin: 20px;
-  backdrop-filter: blur(6px);
+  background: radial-gradient(circle at top, rgba(30, 64, 175, 0.4), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  border-radius: 14px;
+  box-shadow:
+    0 18px 35px rgba(15, 23, 42, 0.85),
+    0 0 0 1px rgba(15, 23, 42, 0.8);
+  font-family: "Roboto Slab", serif;
+  font-size: 0.8rem;
+  color: #e5f2ff;
+  padding: 0.8rem 0.9rem 1.1rem;
 }
 
-/* ========= INPUT FIELDS ========= */
+/* Sol əsas container */
+.container {
+  flex: 1.1;
+}
+
+/* Sağ blok – 2 bölmə */
+.part2 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Başlıqlar */
+.header1 {
+  padding: 0.35rem 0.4rem;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(37, 99, 235, 0.4),
+    rgba(56, 189, 248, 0.25)
+  );
+  border: 1px solid rgba(191, 219, 254, 0.4);
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  color: #e0f2fe;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+}
+
+/* Form layout */
+.form1 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.sual,
+.cavab,
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* Label-lar */
+label {
+  font-size: 0.7rem;
+  color: #bfdbfe;
+}
+
+/* ========= INPUTLAR ========= */
 input {
-  background: rgba(0,255,120,0.07);
-  border: 1px solid rgba(0,255,120,0.3);
-  color: #cbffe1;
-  padding: 6px;
+  color: #0b1120;
   border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  padding: 0.25rem 0.35rem;
+  font-weight: 600;
+  background: radial-gradient(circle at top,
+    rgba(226, 232, 240, 0.95),
+    rgba(203, 213, 225, 0.9));
+  box-shadow:
+    inset 0 0 0 1px rgba(148, 163, 184, 0.4),
+    0 2px 6px rgba(15, 23, 42, 0.6);
 }
 
 input:focus {
   outline: none;
-  box-shadow: 0 0 10px rgba(0,255,120,0.7);
+  border-color: #38bdf8;
+  box-shadow:
+    0 0 0 1px #38bdf8,
+    0 0 14px rgba(56, 189, 248, 0.8);
+}
+
+/* Gizli KB sahəsi */
+#KB {
+  display: none;
 }
 
 /* ========= BUTTONS ========= */
-button {
-  padding: 10px 16px;
-  border-radius: 6px;
-  border: 1px solid rgba(0,255,120,0.45);
-  background: rgba(0,255,120,0.08);
-  color: #b8ffd7;
-  font-weight: 600;
+
+.button {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.run,
+.clear {
+  width: 6rem;
+  height: 2.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(96, 165, 250, 0.8);
+  background: radial-gradient(circle at top,
+    rgba(59, 130, 246, 0.9),
+    rgba(37, 99, 235, 0.9));
+  color: #e0f2fe;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.9);
   cursor: pointer;
-  transition: 0.25s;
-  backdrop-filter: blur(4px);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.clear {
+  background: radial-gradient(circle at top,
+    rgba(30, 64, 175, 0.9),
+    rgba(15, 23, 42, 0.9));
 }
 
 button:hover {
-  background: rgba(0,255,120,0.18);
-  box-shadow: 0 0 12px rgba(0,255,120,0.7);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.95);
 }
 
-/* FOOTER */
+button:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
+}
+
+/* ========= FOOTER ========= */
+
 .footer1 {
-  color: #89ffb7;
-  text-align: center;
-  margin-top: 30px;
-  padding: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 10px;
+  padding: 8px 12px 18px;
+  color: #94a3b8;
+}
+
+/* ========= RESPONSIVE ========= */
+
+@media (max-width: 900px) {
+  .body1 {
+    flex-direction: column;
+    padding-top: 76px;
+  }
+
+  .container,
+  .container2,
+  .container3,
+  .part2 {
+    width: 100%;
+  }
+
+  .body1::after {
+    width: 180px;
+    height: 180px;
+    margin-left: -90px;
+    margin-top: -90px;
+  }
+}
+
+@media (max-width: 600px) {
+  .title1 {
+    font-size: 8px;
+  }
+
+  .run,
+  .clear {
+    width: 7rem;
+  }
 }
