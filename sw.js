@@ -69,3 +69,4 @@ self.addEventListener("fetch", event => {
       })
   );
 });
+<script src="install.js"></script>
