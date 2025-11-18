@@ -3,7 +3,7 @@
   "short_name": "AviationTools",
   "start_url": "/aviation-tools/index.html",
   "scope": "/aviation-tools/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "icons": [
