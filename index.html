@@ -7,11 +7,11 @@
 <title>Aviation Tools by Babaeff</title>
 
 <!-- PWA manifest -->
-<link rel="manifest" href="/aviation-tools/manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest">
 
 <!-- Icons -->
-<link rel="icon" href="/aviation-tools/icons/icon-192.png">
-<link rel="apple-touch-icon" href="/aviation-tools/icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 
 <meta name="theme-color" content="#0f172a">
 
@@ -37,18 +37,6 @@
         color: #38bdf8;
         text-shadow: 0 0 12px #38bdf880;
     }
-<button id="installBtn" style="
-    display:none;
-    padding:14px 20px;
-    border-radius:12px;
-    background:#38bdf8;
-    border:none;
-    color:#0f172a;
-    font-weight:700;
-    font-size:16px;
-    margin-bottom:20px;
-    cursor:pointer;
-">Tətbiqi Qur</button>
 
     .container {
         display: flex;
@@ -112,6 +100,8 @@
     <a href="converter/index.html" class="btn">🚁 Hesablayıcı</a>
 </div>
 
+<p id="pwaStatus" style="margin-top:18px;opacity:0.8;font-size:14px"></p>
+
 <!-- Install Button -->
 <button id="installBtn">📲 Tətbiqi quraşdır</button>
 
@@ -120,7 +110,9 @@
 <script>
 // Service Worker qeydiyyatı
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/aviation-tools/sw.js");
+    navigator.serviceWorker.register("sw.js")
+    .then(reg => console.log('Service Worker registered, scope:', reg.scope))
+    .catch(err => console.error('SW registration failed:', err));
 }
 
 // INSTALL düyməsi üçün
@@ -128,16 +120,73 @@ let deferredPrompt;
 const btn = document.getElementById("installBtn");
 
 window.addEventListener("beforeinstallprompt", e => {
+    console.log('beforeinstallprompt fired');
     e.preventDefault();
     deferredPrompt = e;
     btn.style.display = "block";
 });
 
+// Basic PWA eligibility check — gives feedback if something is missing
+function checkPWAEligibility(){
+    const status = document.getElementById('pwaStatus');
+
+    // 1) check service worker registered
+    navigator.serviceWorker.getRegistration().then(reg => {
+        if (!reg) {
+            console.warn('No service worker registered');
+            status.textContent = 'PWA: Service worker yoxdur — konsolu yoxlayın.';
+            return;
+        }
+        // 2) check manifest availability
+        fetch('manifest.webmanifest', {cache: 'no-store'})
+            .then(res => {
+                if (!res.ok) throw new Error('manifest 404');
+                return res.json();
+            })
+            .then(man => {
+                console.log('Manifest loaded', man);
+                status.textContent = 'PWA: Uyğunluq yoxlanıldı — yükləyin düyməsi görünməlidir.';
+            })
+            .catch(err => {
+                console.error('Manifest problem', err);
+                status.textContent = 'PWA: manifest.webmanifest tapılmadı və ya səhvdir.';
+            });
+    });
+}
+
+// Run check after load
+window.addEventListener('load', checkPWAEligibility);
+
+// Debug helper: add ?debugInstall=1 to force the install button visible (useful on localhost)
+function showInstallButtonForDebug(){
+    try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('debugInstall') === '1'){
+            console.log('Debug: forcing install button visible via URL flag');
+            const b = document.getElementById('installBtn');
+            if (b) b.style.display = 'block';
+            const s = document.getElementById('pwaStatus');
+            if (s) s.textContent = 'PWA: Debug — install button forced visible';
+        }
+    } catch(e){ console.warn('debugInstall parse error', e); }
+}
+showInstallButtonForDebug();
+
 btn.addEventListener("click", () => {
-    if (!deferredPrompt) return;
+    console.log('install button clicked');
+    if (!deferredPrompt) return console.warn('No deferredPrompt available');
     deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => console.log('User response to install prompt:', choice))
+        .catch(err => console.error('Error showing install prompt:', err));
     deferredPrompt = null;
     btn.style.display = "none";
+});
+
+/* Feedback when app is installed */
+window.addEventListener('appinstalled', () => {
+    console.log('PWA installed');
+    const status = document.getElementById('pwaStatus');
+    if (status) status.textContent = 'PWA: Quraşdırıldı — alqış! 🎉';
 });
 </script>
 

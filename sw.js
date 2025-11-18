@@ -2,19 +2,19 @@
 const CACHE_NAME = "aviation-tools-cache-v3";
 
 const FILES_TO_CACHE = [
-  "/aviation-tools/",
-  "/aviation-tools/index.html",
+  "./",
+  "./index.html",
 
   // App pages
-  "/aviation-tools/arzu/index.html",
-  "/aviation-tools/converter/index.html",
+  "./arzu/index.html",
+  "./converter/index.html",
 
   // Icons
-  "/aviation-tools/icons/icon-192.png",
-  "/aviation-tools/icons/icon-512.png",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
 
   // Manifest
-  "/aviation-tools/manifest.webmanifest"
+  "./manifest.webmanifest"
 ];
 
 // INSTALL
@@ -51,9 +51,7 @@ self.addEventListener("fetch", event => {
       .then(res => {
         // Response-u cache-ə sal
         const resClone = res.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(req, resClone);
-        });
+        caches.open(CACHE_NAME).then(cache => cache.put(req, resClone));
         return res;
       })
       .catch(() => {
@@ -63,10 +61,12 @@ self.addEventListener("fetch", event => {
 
           // Əgər HTML istənirsə – ana səhifəyə yönəlt
           if (req.destination === "document") {
-            return caches.match("/aviation-tools/index.html");
+            return caches.match("./index.html");
           }
+          // Nothing found — return a simple Response or resolve to undefined
+          return undefined;
         });
       })
   );
-});
-<script src="install.js"></script>
+
+
