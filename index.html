@@ -76,11 +76,21 @@
         color: #0f172a;
         border: none;
         cursor: pointer;
-        display: none;
+        display: inline-block;
     }
 
     #installBtn:hover {
         background: #5fd4ff;
+    }
+
+    /* Fixed install button (bottom-right) */
+    .install-fixed {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1200;
+        box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+        backdrop-filter: blur(6px);
     }
 
     footer {
@@ -102,8 +112,8 @@
 
 <p id="pwaStatus" style="margin-top:18px;opacity:0.8;font-size:14px"></p>
 
-<!-- Install Button -->
-<button id="installBtn">📲 Tətbiqi quraşdır</button>
+<!-- Install Button (always visible, styled like other .btn) -->
+<button id="installBtn" class="btn install-fixed">📲 Tətbiqi quraşdır</button>
 
 <footer>© 2025 Aviation Utility Suite</footer>
 
@@ -115,16 +125,7 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.error('SW registration failed:', err));
 }
 
-// INSTALL düyməsi üçün
-let deferredPrompt;
-const btn = document.getElementById("installBtn");
-
-window.addEventListener("beforeinstallprompt", e => {
-    console.log('beforeinstallprompt fired');
-    e.preventDefault();
-    deferredPrompt = e;
-    btn.style.display = "block";
-});
+// INSTALL düyməsi üçün logic is in install.js (deferred prompt, debug & checks)
 
 // Basic PWA eligibility check — gives feedback if something is missing
 function checkPWAEligibility(){
@@ -183,12 +184,10 @@ btn.addEventListener("click", () => {
 });
 
 /* Feedback when app is installed */
-window.addEventListener('appinstalled', () => {
-    console.log('PWA installed');
-    const status = document.getElementById('pwaStatus');
-    if (status) status.textContent = 'PWA: Quraşdırıldı — alqış! 🎉';
-});
+// appinstalled handling moved to `install.js`
 </script>
+
+<script src="install.js"></script>
 
 </body>
 </html>
