@@ -39,34 +39,21 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// FETCH – Online-first, offline fallback
-self.addEventListener("fetch", event => {
-  const req = event.request;
-
-  // Yalnız GET cache edilsin
-  if (req.method !== "GET") return;
-
-  event.respondWith(
-    fetch(req)
-      .then(res => {
-        // Response-u cache-ə sal
-        const resClone = res.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(req, resClone));
+// FETCH – Offline-first (simple, like `arzu`)
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  e.respondWith(
+    caches.match(req).then(cached => {
+      return cached || fetch(req).then(res => {
+        // update cache for future
+        caches.open(CACHE_NAME).then(cache => cache.put(req, res.clone()));
         return res;
-      })
-      .catch(() => {
-        // OFFLINE fallback
-        return caches.match(req).then(cached => {
-          if (cached) return cached;
-
-          // Əgər HTML istənirsə – ana səhifəyə yönəlt
-          if (req.destination === "document") {
-            return caches.match("./index.html");
-          }
-          // Nothing found — return a simple Response or resolve to undefined
-          return undefined;
-        });
-      })
+      }).catch(() => {
+        // if navigation and not cached, return cached index
+        if (req.destination === 'document') return caches.match('./index.html');
+      });
+    })
   );
 
 

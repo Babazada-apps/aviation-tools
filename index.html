@@ -14,6 +14,8 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 
 <meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 
 <style>
     body {
@@ -124,67 +126,7 @@ if ("serviceWorker" in navigator) {
     .then(reg => console.log('Service Worker registered, scope:', reg.scope))
     .catch(err => console.error('SW registration failed:', err));
 }
-
-// INSTALL düyməsi üçün logic is in install.js (deferred prompt, debug & checks)
-
-// Basic PWA eligibility check — gives feedback if something is missing
-function checkPWAEligibility(){
-    const status = document.getElementById('pwaStatus');
-
-    // 1) check service worker registered
-    navigator.serviceWorker.getRegistration().then(reg => {
-        if (!reg) {
-            console.warn('No service worker registered');
-            status.textContent = 'PWA: Service worker yoxdur — konsolu yoxlayın.';
-            return;
-        }
-        // 2) check manifest availability
-        fetch('manifest.webmanifest', {cache: 'no-store'})
-            .then(res => {
-                if (!res.ok) throw new Error('manifest 404');
-                return res.json();
-            })
-            .then(man => {
-                console.log('Manifest loaded', man);
-                status.textContent = 'PWA: Uyğunluq yoxlanıldı — yükləyin düyməsi görünməlidir.';
-            })
-            .catch(err => {
-                console.error('Manifest problem', err);
-                status.textContent = 'PWA: manifest.webmanifest tapılmadı və ya səhvdir.';
-            });
-    });
-}
-
-// Run check after load
-window.addEventListener('load', checkPWAEligibility);
-
-// Debug helper: add ?debugInstall=1 to force the install button visible (useful on localhost)
-function showInstallButtonForDebug(){
-    try {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('debugInstall') === '1'){
-            console.log('Debug: forcing install button visible via URL flag');
-            const b = document.getElementById('installBtn');
-            if (b) b.style.display = 'block';
-            const s = document.getElementById('pwaStatus');
-            if (s) s.textContent = 'PWA: Debug — install button forced visible';
-        }
-    } catch(e){ console.warn('debugInstall parse error', e); }
-}
-showInstallButtonForDebug();
-
-btn.addEventListener("click", () => {
-    console.log('install button clicked');
-    if (!deferredPrompt) return console.warn('No deferredPrompt available');
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choice => console.log('User response to install prompt:', choice))
-        .catch(err => console.error('Error showing install prompt:', err));
-    deferredPrompt = null;
-    btn.style.display = "none";
-});
-
-/* Feedback when app is installed */
-// appinstalled handling moved to `install.js`
+// INSTALL düyməsi üçün logic yerləşir: `install.js` faylında (deferred prompt, debug & checks)
 </script>
 
 <script src="install.js"></script>
