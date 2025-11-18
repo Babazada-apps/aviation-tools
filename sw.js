@@ -1,5 +1,5 @@
-// Aviation Tools - Service Worker
-const CACHE_NAME = "aviation-tools-v1";
+// Aviation Tools - Service Worker (Optimized for GitHub Pages)
+const CACHE_NAME = "aviation-tools-cache-v3";
 
 const FILES_TO_CACHE = [
   "/aviation-tools/",
@@ -14,66 +14,58 @@ const FILES_TO_CACHE = [
   "/aviation-tools/icons/icon-512.png",
 
   // Manifest
-  "/aviation-tools/manifest.webmanifest",
-
-  // Styles / Scripts (əgər varsa)
-  "/aviation-tools/sw.js"
+  "/aviation-tools/manifest.webmanifest"
 ];
 
-// Install event
+// INSTALL
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(FILES_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
   );
   self.skipWaiting();
 });
 
-// Activate event (köhnə cache-ləri silir)
+// ACTIVATE – köhnə cache-ləri sil
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
+    caches.keys().then(keys =>
+      Promise.all(
         keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
-      );
-    })
+      )
+    )
   );
   self.clients.claim();
 });
 
-// Fetch event - offline dəstəyi
+// FETCH – Online-first, offline fallback
 self.addEventListener("fetch", event => {
-  const request = event.request;
+  const req = event.request;
 
-  // Yalnız GET sorğularını cache et
-  if (request.method !== "GET") {
-    return;
-  }
+  // Yalnız GET cache edilsin
+  if (req.method !== "GET") return;
 
   event.respondWith(
-    caches.match(request).then(cached => {
-      return (
-        cached ||
-        fetch(request)
-          .then(response => {
-            // Response-u cache-lə
-            return caches.open(CACHE_NAME).then(cache => {
-              cache.put(request, response.clone());
-              return response;
-            });
-          })
-          .catch(() => {
-            // Offline fallback
-            if (request.destination === "document") {
-              return caches.match("/aviation-tools/index.html");
-            }
-          })
-      );
-    })
+    fetch(req)
+      .then(res => {
+        // Response-u cache-ə sal
+        const resClone = res.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(req, resClone);
+        });
+        return res;
+      })
+      .catch(() => {
+        // OFFLINE fallback
+        return caches.match(req).then(cached => {
+          if (cached) return cached;
+
+          // Əgər HTML istənirsə – ana səhifəyə yönəlt
+          if (req.destination === "document") {
+            return caches.match("/aviation-tools/index.html");
+          }
+        });
+      })
   );
 });
