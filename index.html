@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aviation Tools by Babaeff</title>
+
+<!-- PWA manifest -->
 <link rel="manifest" href="/aviation-tools/manifest.webmanifest">
 
+<!-- Icons -->
 <link rel="icon" href="/aviation-tools/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/aviation-tools/icons/icon-192.png">
 
-<meta name="theme-color" content="#38bdf8">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aviation Tools by Babaeff</title>
+<meta name="theme-color" content="#0f172a">
 
 <style>
     body {
@@ -27,7 +31,7 @@
     }
 
     h1 {
-        font-size: 24px;
+        font-size: 26px;
         font-weight: 700;
         margin-bottom: 35px;
         color: #38bdf8;
@@ -50,7 +54,7 @@
         font-size: 17px;
         font-weight: 600;
         color: #e0f2fe;
-        background: rgba(56,189,248,0.15);
+        background: rgba(56,189,248,0.18);
         border: 1px solid rgba(255,255,255,0.1);
         backdrop-filter: blur(6px);
         box-shadow: 0 4px 18px rgba(0,0,0,0.35);
@@ -62,6 +66,23 @@
         transform: scale(1.04);
     }
 
+    #installBtn {
+        margin-top: 25px;
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        background: #38bdf8;
+        color: #0f172a;
+        border: none;
+        cursor: pointer;
+        display: none;
+    }
+
+    #installBtn:hover {
+        background: #5fd4ff;
+    }
+
     footer {
         margin-top: 40px;
         font-size: 12px;
@@ -71,13 +92,6 @@
 </head>
 
 <body>
-    <button id="installBtn" style="
-  position: fixed; top: 15px; right: 15px;
-  padding: 10px 16px; border-radius: 10px;
-  background: rgba(56,189,248,0.2); color: #e0f2fe;
-  border: 1px solid rgba(255,255,255,0.2); font-weight: 600;
-  backdrop-filter: blur(5px);
-">Tətbiqi Yükə</button>
 
 <h1>🇦🇿✈️ Aviation Tools</h1>
 
@@ -86,28 +100,34 @@
     <a href="converter/index.html" class="btn">🚁 Hesablayıcı</a>
 </div>
 
+<!-- Install Button -->
+<button id="installBtn">📲 Tətbiqi quraşdır</button>
+
 <footer>© 2025 Aviation Utility Suite</footer>
+
 <script>
+// Service Worker qeydiyyatı
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/aviation-tools/sw.js");
+    navigator.serviceWorker.register("/aviation-tools/sw.js");
 }
-</script>
-    <script>
+
+// INSTALL düyməsi üçün
 let deferredPrompt;
 const btn = document.getElementById("installBtn");
 
 window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  btn.style.display = "block";
+    e.preventDefault();
+    deferredPrompt = e;
+    btn.style.display = "block";
 });
 
 btn.addEventListener("click", () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt = null;
-  btn.style.display = "none";
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt = null;
+    btn.style.display = "none";
 });
-    </script>
+</script>
+
 </body>
 </html>
